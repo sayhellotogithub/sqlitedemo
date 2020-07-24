@@ -1,4 +1,4 @@
-package com.iblogstreet.myapplication.db
+package com.iblogstreet.sqlitedemo.db
 
 import android.provider.BaseColumns
 
@@ -20,8 +20,12 @@ object FeedReaderContract {
                 "${BaseColumns._ID} INTEGER PRIMARY KEY," +
                 "${FeedEntry.COLUMN_NAME_TITLE} TEXT," +
                 "${FeedEntry.COLUMN_NAME_SUBTITLE} TEXT," +
-                "${FeedEntry.COLUMN_CREATE_DATE} Text" +
+                "${FeedEntry.COLUMN_CREATE_DATE} TEXT," +
+                "${FeedEntry.COLUMN_UPDATE_DATE}" +
                 ")"
 
     const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${FeedEntry.TABLE_NAME}"
+
+    const val SQL_ADD_COLUMN_UPDATE_DATE =
+        "ALTER TABLE ${FeedEntry.TABLE_NAME} ADD COLUMN ${FeedEntry.COLUMN_UPDATE_DATE} TEXT"
 }

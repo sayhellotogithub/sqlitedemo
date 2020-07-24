@@ -1,4 +1,4 @@
-package com.iblogstreet.myapplication.db
+package com.iblogstreet.sqlitedemo.db
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -15,7 +15,7 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(
 ) {
     companion object {
         val TAG = FeedReaderDbHelper.javaClass.simpleName
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
         const val DATABASE_NAME = "FeedReader.db"
     }
 
@@ -27,9 +27,15 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(
     override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         super.onDowngrade(db, oldVersion, newVersion)
         Log.e(TAG, "onDowngrade")
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        Log.e(TAG, "onUpgrade")
+        Log.e(TAG, "onUpgrade${oldVersion},${newVersion}")
+        if (oldVersion == 1) {
+            db.execSQL(FeedReaderContract.SQL_ADD_COLUMN_UPDATE_DATE)
+        }
+
+
     }
 }
