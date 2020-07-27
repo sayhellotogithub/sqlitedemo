@@ -7,6 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.iblogstreet.sqlitedemo.R
+import com.iblogstreet.sqlitedemo.util.DBManager
 import com.iblogstreet.sqlitedemo.util.DbUtil
 
 /**
@@ -14,6 +15,7 @@ import com.iblogstreet.sqlitedemo.util.DbUtil
  * @date 2020/7/24 3:34 PM
  */
 class UpdateFeedReaderActivity : AppCompatActivity() {
+    private lateinit var dbManager: DBManager
     private lateinit var etTitle: EditText
     private lateinit var etSubTitle: EditText
     private var id: Long? = null
@@ -26,12 +28,13 @@ class UpdateFeedReaderActivity : AppCompatActivity() {
     }
 
     private fun initData() {
+        dbManager = DBManager(this)
         id = intent.getLongExtra("id", 0)
         getData()
     }
 
     private fun getData() {
-        DbUtil.readDataById(this, id)?.apply {
+        DbUtil.readDataById(dbManager.getDb(), id)?.apply {
             etSubTitle.setText(subtitle)
             etTitle.setText(title)
         }
@@ -44,7 +47,7 @@ class UpdateFeedReaderActivity : AppCompatActivity() {
 
     private fun initEvent() {
         findViewById<TextView>(R.id.tv_update).setOnClickListener {
-            if (DbUtil.updateData(this, id, etTitle.text.toString(), etSubTitle.text.toString())) {
+            if (DbUtil.updateData(dbManager.getDb(), id, etTitle.text.toString(), etSubTitle.text.toString())) {
                 Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)
                 finish()
@@ -52,5 +55,10 @@ class UpdateFeedReaderActivity : AppCompatActivity() {
                 Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onDestroy() {
+        dbManager.close()
+        super.onDestroy()
     }
 }

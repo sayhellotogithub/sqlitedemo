@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iblogstreet.sqlitedemo.R
 import com.iblogstreet.sqlitedemo.adapter.FeedReaderAdapter
 import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
+import com.iblogstreet.sqlitedemo.util.DBManager
 import com.iblogstreet.sqlitedemo.util.DbUtil
 
 /**
@@ -19,23 +20,24 @@ import com.iblogstreet.sqlitedemo.util.DbUtil
 class DeleteFeedReaderActivity : AppCompatActivity() {
     private lateinit var etTitle: EditText
     private lateinit var rv: RecyclerView
+    private lateinit var dbManager: DBManager
     private var feedReaderList = mutableListOf<FeedReaderBean>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_delete_feedreader)
         initView()
         initEvent()
-
         initRecycler()
         initData()
     }
 
     private fun initData() {
+        dbManager = DBManager(this)
         getData()
     }
 
     private fun getData() {
-        feedReaderList.addAll(DbUtil.readAllData(this))
+        feedReaderList.addAll(DbUtil.readAllData(dbManager.getDb()))
         rv.adapter?.notifyDataSetChanged()
     }
 
@@ -48,7 +50,7 @@ class DeleteFeedReaderActivity : AppCompatActivity() {
         adpater.listener = object : FeedReaderAdapter.IFeedReaderAdapterListener {
             override fun onItemClick(position: Int) {
                 if (DbUtil.deleteDataById(
-                        this@DeleteFeedReaderActivity,
+                        dbManager.getDb(),
                         feedReaderList[position].id
                     )
                 ) {
@@ -71,7 +73,7 @@ class DeleteFeedReaderActivity : AppCompatActivity() {
 
     private fun initEvent() {
         findViewById<TextView>(R.id.tv_search).setOnClickListener {
-            val list = DbUtil.readData(this, etTitle.text.toString())
+            val list = DbUtil.readData(dbManager.getDb(), etTitle.text.toString())
             feedReaderList.clear()
             if (list.size > 0) {
                 feedReaderList.addAll(list)
@@ -81,5 +83,10 @@ class DeleteFeedReaderActivity : AppCompatActivity() {
             }
             rv.adapter?.notifyDataSetChanged()
         }
+    }
+
+    override fun onDestroy() {
+        dbManager.close()
+        super.onDestroy()
     }
 }

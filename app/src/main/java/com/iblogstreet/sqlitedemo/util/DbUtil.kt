@@ -2,6 +2,7 @@ package com.iblogstreet.sqlitedemo.util
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.provider.BaseColumns
 import android.text.TextUtils
 import android.util.Log
@@ -16,9 +17,7 @@ import java.util.*
  * @date 2020/7/23 5:17 PM
  */
 object DbUtil {
-    fun putData(context: Context, title: String, subtitle: String): Boolean {
-        val dbHelper = FeedReaderDbHelper(context)
-        val db = dbHelper.writableDatabase
+    fun putData(db: SQLiteDatabase, title: String, subtitle: String): Boolean {
         val values = ContentValues().apply {
             put(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE, title)
             put(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE, subtitle)
@@ -29,9 +28,7 @@ object DbUtil {
         return newRowId != null
     }
 
-    fun readAllData(context: Context): List<FeedReaderBean> {
-        val dbHelper = FeedReaderDbHelper(context)
-        val db = dbHelper.readableDatabase
+    fun readAllData(db: SQLiteDatabase): List<FeedReaderBean> {
         val projection = arrayOf(
             BaseColumns._ID,
             FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE,
@@ -74,9 +71,7 @@ object DbUtil {
         return list
     }
 
-    fun readDataById(context: Context, id: Long?): FeedReaderBean? {
-        val dbHelper = FeedReaderDbHelper(context)
-        val db = dbHelper.readableDatabase
+    fun readDataById(db: SQLiteDatabase, id: Long?): FeedReaderBean? {
         val projection = arrayOf(
             BaseColumns._ID,
             FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE,
@@ -118,9 +113,8 @@ object DbUtil {
 
     }
 
-    fun readData(context: Context, title: String): List<FeedReaderBean> {
-        val dbHelper = FeedReaderDbHelper(context)
-        val db = dbHelper.readableDatabase
+    fun readData(db: SQLiteDatabase, title: String): List<FeedReaderBean> {
+
         val projection = arrayOf(
             BaseColumns._ID,
             FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE,
@@ -165,12 +159,10 @@ object DbUtil {
         return list
     }
 
-    fun deleteDataById(context: Context, id: Long?): Boolean {
+    fun deleteDataById(db: SQLiteDatabase, id: Long?): Boolean {
         if (id == null) {
             return false
         }
-        val dbHelper = FeedReaderDbHelper(context)
-        val db = dbHelper.writableDatabase
         val selection = "${BaseColumns._ID} = ?"
         val selectionArgs = arrayOf("$id")
         val deletedRows =
@@ -178,12 +170,10 @@ object DbUtil {
         return deletedRows > 0
     }
 
-    fun updateData(context: Context, id: Long?, title: String, subtitle: String): Boolean {
+    fun updateData(db: SQLiteDatabase, id: Long?, title: String, subtitle: String): Boolean {
         if (id == null) {
             return false
         }
-        val dbHelper = FeedReaderDbHelper(context)
-        val db = dbHelper.writableDatabase
 
         val values = ContentValues().apply {
             put(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE, title)

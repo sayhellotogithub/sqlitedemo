@@ -24,8 +24,11 @@ class DBManager {
         return this
     }
 
-    fun getDb(): SQLiteDatabase? {
-        return db
+    fun getDb(): SQLiteDatabase {
+        if (db == null) {
+            db = dbHelper?.writableDatabase
+        }
+        return db!!
     }
 
     fun close() {

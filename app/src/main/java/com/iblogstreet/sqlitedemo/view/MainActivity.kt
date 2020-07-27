@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iblogstreet.sqlitedemo.R
 import com.iblogstreet.sqlitedemo.adapter.FeedReaderAdapter
 import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
+import com.iblogstreet.sqlitedemo.util.DBManager
 import com.iblogstreet.sqlitedemo.util.DbUtil
 
 /**
@@ -21,10 +22,11 @@ import com.iblogstreet.sqlitedemo.util.DbUtil
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var rv: RecyclerView
     private var feedReaderList = mutableListOf<FeedReaderBean>()
+    private lateinit var dbManager: DBManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        dbManager = DBManager(this)
         initView()
         initRecycler()
         initEvent()
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun getData() {
-        feedReaderList.addAll(DbUtil.readAllData(this))
+        feedReaderList.addAll(DbUtil.readAllData(dbManager.getDb()))
         rv.adapter?.notifyDataSetChanged()
     }
 
@@ -83,6 +85,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             getData()
             Log.e("", "onActivityResult")
         }
+    }
+
+    override fun onDestroy() {
+        dbManager.close()
+        super.onDestroy()
     }
 
 }

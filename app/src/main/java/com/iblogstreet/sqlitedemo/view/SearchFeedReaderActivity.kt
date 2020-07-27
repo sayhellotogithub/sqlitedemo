@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iblogstreet.sqlitedemo.R
 import com.iblogstreet.sqlitedemo.adapter.FeedReaderAdapter
 import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
+import com.iblogstreet.sqlitedemo.util.DBManager
 import com.iblogstreet.sqlitedemo.util.DbUtil
 
 /**
@@ -19,6 +20,7 @@ import com.iblogstreet.sqlitedemo.util.DbUtil
 class SearchFeedReaderActivity : AppCompatActivity() {
     private lateinit var etTitle: EditText
     private lateinit var rv: RecyclerView
+    private lateinit var dbManager: DBManager
     private var feedReaderList = mutableListOf<FeedReaderBean>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,11 +32,12 @@ class SearchFeedReaderActivity : AppCompatActivity() {
     }
 
     private fun initData() {
+        dbManager = DBManager(this)
         getData()
     }
 
     private fun getData() {
-        feedReaderList.addAll(DbUtil.readAllData(this))
+        feedReaderList.addAll(DbUtil.readAllData(dbManager.getDb()))
         rv.adapter?.notifyDataSetChanged()
     }
 
@@ -59,7 +62,7 @@ class SearchFeedReaderActivity : AppCompatActivity() {
 
     private fun initEvent() {
         findViewById<TextView>(R.id.tv_search).setOnClickListener {
-            val list = DbUtil.readData(this, etTitle.text.toString())
+            val list = DbUtil.readData(dbManager.getDb(), etTitle.text.toString())
             feedReaderList.clear()
             if (list.size > 0) {
                 feedReaderList.addAll(list)
@@ -69,5 +72,10 @@ class SearchFeedReaderActivity : AppCompatActivity() {
             }
             rv.adapter?.notifyDataSetChanged()
         }
+    }
+
+    override fun onDestroy() {
+        dbManager.close()
+        super.onDestroy()
     }
 }
