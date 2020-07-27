@@ -40,7 +40,7 @@ object DbUtil {
             FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE
         )
 
-        val sortOrder = "${FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE} DESC"
+        val sortOrder = "${FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE} ASC"
 
         val cursor = db.query(
             FeedReaderContract.FeedEntry.TABLE_NAME,
@@ -74,6 +74,50 @@ object DbUtil {
         return list
     }
 
+    fun readDataById(context: Context, id: Long?): FeedReaderBean? {
+        val dbHelper = FeedReaderDbHelper(context)
+        val db = dbHelper.readableDatabase
+        val projection = arrayOf(
+            BaseColumns._ID,
+            FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE,
+            FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE,
+            FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE,
+            FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE
+        )
+        val selection = "${BaseColumns._ID}= ?"
+        val selectionArgs = arrayOf("$id")
+
+
+        val cursor = db.query(
+            FeedReaderContract.FeedEntry.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        with(cursor) {
+            while (moveToFirst()) {
+                val bean = FeedReaderBean()
+                bean.id = getLong(getColumnIndex(BaseColumns._ID))
+                bean.title =
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE))
+                bean.subtitle =
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE))
+
+                bean.createDate =
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE))
+                bean.updateDate =
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE))
+                cursor.close()
+                return bean
+            }
+        }
+        return null
+
+    }
+
     fun readData(context: Context, title: String): List<FeedReaderBean> {
         val dbHelper = FeedReaderDbHelper(context)
         val db = dbHelper.readableDatabase
@@ -84,8 +128,8 @@ object DbUtil {
             FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE,
             FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE
         )
-        val selection = "${FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE}= ?"
-        val selectionArgs = arrayOf(title)
+        val selection = "${FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE} LIKE ?"
+        val selectionArgs = arrayOf("%$title%")
 
         val sortOrder = "${FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE} DESC"
 
@@ -121,27 +165,35 @@ object DbUtil {
         return list
     }
 
-    fun deleteData(context: Context): Boolean {
+    fun deleteDataById(context: Context, id: Long?): Boolean {
+        if (id == null) {
+            return false
+        }
         val dbHelper = FeedReaderDbHelper(context)
         val db = dbHelper.writableDatabase
-        val selection = "${FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE} LIKE ?"
-        val selectionArgs = arrayOf("myTitle")
+        val selection = "${BaseColumns._ID} = ?"
+        val selectionArgs = arrayOf("$id")
         val deletedRows =
             db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, selection, selectionArgs)
         return deletedRows > 0
     }
 
-    fun updateData(context: Context) {
+    fun updateData(context: Context, id: Long?, title: String, subtitle: String): Boolean {
+        if (id == null) {
+            return false
+        }
         val dbHelper = FeedReaderDbHelper(context)
         val db = dbHelper.writableDatabase
 
-        val title = "myNewTitle"
         val values = ContentValues().apply {
             put(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE, title)
+            put(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE, subtitle)
+            put(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE, System.currentTimeMillis())
         }
-        val selection = "${FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE} LIKE ?"
-        val selectionArgs = arrayOf("MyOldTitle")
+        val selection = "${BaseColumns._ID} = ?"
+        val selectionArgs = arrayOf("$id")
         val count =
             db.update(FeedReaderContract.FeedEntry.TABLE_NAME, values, selection, selectionArgs)
+        return count > 0
     }
 }

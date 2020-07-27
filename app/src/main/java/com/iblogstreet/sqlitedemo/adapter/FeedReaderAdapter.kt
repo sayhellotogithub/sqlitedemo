@@ -16,6 +16,8 @@ import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
 class FeedReaderAdapter(val context: Context, val list: MutableList<FeedReaderBean>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    var listener: IFeedReaderAdapterListener? = null
+
     class FeedReaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var tvTitle: TextView = itemView.findViewById(R.id.tv_title)
         var tvSubTitle: TextView = itemView.findViewById(R.id.tv_sub_title)
@@ -38,5 +40,13 @@ class FeedReaderAdapter(val context: Context, val list: MutableList<FeedReaderBe
         viewHolder.tvSubTitle.text = bean.subtitle
         viewHolder.tvCreate.text = bean.createDate
 
+        viewHolder.itemView.setOnClickListener {
+            listener?.onItemClick(position)
+        }
+
+    }
+
+   open interface IFeedReaderAdapterListener {
+        fun onItemClick(position: Int)
     }
 }

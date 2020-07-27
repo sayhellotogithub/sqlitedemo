@@ -3,6 +3,7 @@ package com.iblogstreet.sqlitedemo.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -38,7 +39,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val linearLayoutManager = LinearLayoutManager(this)
 
         rv.layoutManager = linearLayoutManager
-        rv.adapter = FeedReaderAdapter(this, feedReaderList)
+        val adpater = FeedReaderAdapter(this, feedReaderList)
+        rv.adapter = adpater
+        adpater.listener = object : FeedReaderAdapter.IFeedReaderAdapterListener {
+            override fun onItemClick(position: Int) {
+                val intent = Intent(this@MainActivity, UpdateFeedReaderActivity::class.java)
+                intent.putExtra("id", feedReaderList.get(position).id)
+                startActivityForResult(intent, 100)
+            }
+        }
 
     }
 
@@ -49,21 +58,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun initEvent() {
         findViewById<TextView>(R.id.tv_add).setOnClickListener(this)
+        findViewById<TextView>(R.id.tv_select).setOnClickListener(this)
+        findViewById<TextView>(R.id.tv_delete).setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.tv_add -> {
-                startActivity(Intent(this, AddFeedReaderActivity::class.java))
+                startActivityForResult(Intent(this, AddFeedReaderActivity::class.java), 100)
             }
             R.id.tv_delete -> {
-
-            }
-            R.id.tv_update -> {
-
+                startActivity(Intent(this, DeleteFeedReaderActivity::class.java))
             }
             R.id.tv_select -> {
-
+                startActivity(Intent(this, SearchFeedReaderActivity::class.java))
             }
         }
     }
@@ -73,6 +81,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if (resultCode == Activity.RESULT_OK) {
             feedReaderList.clear()
             getData()
+            Log.e("", "onActivityResult")
         }
     }
 

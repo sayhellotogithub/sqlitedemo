@@ -16,6 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.AddFeedReaderActivity" />
-
+        <activity android:name=".view.UpdateFeedReaderActivity" />
+        <activity android:name=".view.SearchFeedReaderActivity" />
+        <activity android:name=".view.DeleteFeedReaderActivity" />
     </application>
 </manifest>
