@@ -7,13 +7,15 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.iblogstreet.sqlitedemo.R
 import com.iblogstreet.sqlitedemo.adapter.FeedReaderAdapter
-import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
-import com.iblogstreet.sqlitedemo.util.DBManager
-import com.iblogstreet.sqlitedemo.util.DbUtil
+import com.iblogstreet.sqlitedemo.bean.EntryBean
+import com.iblogstreet.sqlitedemo.viewmodel.EntryViewModel
+
 
 /**
  * @author junwang
@@ -21,12 +23,14 @@ import com.iblogstreet.sqlitedemo.util.DbUtil
  */
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var rv: RecyclerView
-    private var feedReaderList = mutableListOf<FeedReaderBean>()
-    private lateinit var dbManager: DBManager
+    private var feedReaderList = mutableListOf<EntryBean>()
+
+    private lateinit var entryViewModel: EntryViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        dbManager = DBManager(this)
+        entryViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.application)
+            .create(EntryViewModel::class.java)
         initView()
         initRecycler()
         initEvent()
@@ -54,8 +58,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun getData() {
-        feedReaderList.addAll(DbUtil.readAllData(dbManager.getDb()))
-        rv.adapter?.notifyDataSetChanged()
+        entryViewModel.getAllEntry().observe(this, Observer {
+            feedReaderList.addAll(it)
+            rv.adapter?.notifyDataSetChanged()
+        })
     }
 
     private fun initEvent() {
@@ -81,14 +87,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
+            Log.e("onActivityResult", "onActivityResult")
             feedReaderList.clear()
             getData()
-            Log.e("", "onActivityResult")
+
         }
     }
 
     override fun onDestroy() {
-        dbManager.close()
         super.onDestroy()
     }
 

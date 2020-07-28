@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.iblogstreet.sqlitedemo.R
-import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
+import com.iblogstreet.sqlitedemo.bean.EntryBean
 
 /**
  * @author junwang
  * @date 2020/7/24 2:16 PM
  */
-class FeedReaderAdapter(val context: Context, val list: MutableList<FeedReaderBean>) :
+class FeedReaderAdapter(val context: Context, val list: MutableList<EntryBean>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var listener: IFeedReaderAdapterListener? = null

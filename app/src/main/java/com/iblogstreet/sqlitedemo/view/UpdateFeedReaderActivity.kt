@@ -18,7 +18,7 @@ class UpdateFeedReaderActivity : AppCompatActivity() {
     private lateinit var dbManager: DBManager
     private lateinit var etTitle: EditText
     private lateinit var etSubTitle: EditText
-    private var id: Long? = null
+    private var id: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_feedreader)
@@ -29,7 +29,7 @@ class UpdateFeedReaderActivity : AppCompatActivity() {
 
     private fun initData() {
         dbManager = DBManager(this)
-        id = intent.getLongExtra("id", 0)
+        id = intent.getIntExtra("id", 0)
         getData()
     }
 

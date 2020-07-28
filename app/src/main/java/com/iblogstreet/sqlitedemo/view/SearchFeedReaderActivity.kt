@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.iblogstreet.sqlitedemo.R
 import com.iblogstreet.sqlitedemo.adapter.FeedReaderAdapter
+import com.iblogstreet.sqlitedemo.bean.EntryBean
 import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
 import com.iblogstreet.sqlitedemo.util.DBManager
 import com.iblogstreet.sqlitedemo.util.DbUtil
@@ -21,7 +22,7 @@ class SearchFeedReaderActivity : AppCompatActivity() {
     private lateinit var etTitle: EditText
     private lateinit var rv: RecyclerView
     private lateinit var dbManager: DBManager
-    private var feedReaderList = mutableListOf<FeedReaderBean>()
+    private var feedReaderList = mutableListOf<EntryBean>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_feedreader)

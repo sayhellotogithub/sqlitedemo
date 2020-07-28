@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.provider.BaseColumns
 import android.text.TextUtils
 import android.util.Log
+import com.iblogstreet.sqlitedemo.bean.EntryBean
 
 import com.iblogstreet.sqlitedemo.bean.FeedReaderBean
 import com.iblogstreet.sqlitedemo.db.FeedReaderContract
@@ -28,7 +29,7 @@ object DbUtil {
         return newRowId != null
     }
 
-    fun readAllData(db: SQLiteDatabase): List<FeedReaderBean> {
+    fun readAllData(db: SQLiteDatabase): List<EntryBean> {
         val projection = arrayOf(
             BaseColumns._ID,
             FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE,
@@ -48,20 +49,14 @@ object DbUtil {
             null,
             sortOrder
         )
-        val list = mutableListOf<FeedReaderBean>()
+        val list = mutableListOf<EntryBean>()
         with(cursor) {
             while (moveToNext()) {
-                val bean = FeedReaderBean()
-                bean.id = getLong(getColumnIndex(BaseColumns._ID))
-                bean.title =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE))
-                bean.subtitle =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE))
-
-                bean.createDate =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE))
-                bean.updateDate =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE))
+                val bean = EntryBean(getInt(getColumnIndex(BaseColumns._ID))
+                    ,getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE)))
 
                 list.add(bean)
             }
@@ -71,7 +66,7 @@ object DbUtil {
         return list
     }
 
-    fun readDataById(db: SQLiteDatabase, id: Long?): FeedReaderBean? {
+    fun readDataById(db: SQLiteDatabase, id: Int?): EntryBean? {
         val projection = arrayOf(
             BaseColumns._ID,
             FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE,
@@ -94,17 +89,11 @@ object DbUtil {
         )
         with(cursor) {
             while (moveToFirst()) {
-                val bean = FeedReaderBean()
-                bean.id = getLong(getColumnIndex(BaseColumns._ID))
-                bean.title =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE))
-                bean.subtitle =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE))
-
-                bean.createDate =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE))
-                bean.updateDate =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE))
+                val bean = EntryBean(getInt(getColumnIndex(BaseColumns._ID))
+                    ,getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE)))
                 cursor.close()
                 return bean
             }
@@ -113,7 +102,7 @@ object DbUtil {
 
     }
 
-    fun readData(db: SQLiteDatabase, title: String): List<FeedReaderBean> {
+    fun readData(db: SQLiteDatabase, title: String): List<EntryBean> {
 
         val projection = arrayOf(
             BaseColumns._ID,
@@ -136,20 +125,14 @@ object DbUtil {
             null,
             sortOrder
         )
-        val list = mutableListOf<FeedReaderBean>()
+        val list = mutableListOf<EntryBean>()
         with(cursor) {
             while (moveToNext()) {
-                val bean = FeedReaderBean()
-                bean.id = getLong(getColumnIndex(BaseColumns._ID))
-                bean.title =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE))
-                bean.subtitle =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE))
-
-                bean.createDate =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE))
-                bean.updateDate =
-                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE))
+                val bean = EntryBean(getInt(getColumnIndex(BaseColumns._ID))
+                    ,getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_CREATE_DATE)),
+                    getString(getColumnIndex(FeedReaderContract.FeedEntry.COLUMN_UPDATE_DATE)))
 
                 list.add(bean)
             }
@@ -159,7 +142,7 @@ object DbUtil {
         return list
     }
 
-    fun deleteDataById(db: SQLiteDatabase, id: Long?): Boolean {
+    fun deleteDataById(db: SQLiteDatabase, id: Int?): Boolean {
         if (id == null) {
             return false
         }
@@ -170,7 +153,7 @@ object DbUtil {
         return deletedRows > 0
     }
 
-    fun updateData(db: SQLiteDatabase, id: Long?, title: String, subtitle: String): Boolean {
+    fun updateData(db: SQLiteDatabase, id: Int?, title: String, subtitle: String): Boolean {
         if (id == null) {
             return false
         }

@@ -21,7 +21,7 @@ object FeedReaderContract {
                 "${FeedEntry.COLUMN_NAME_TITLE} TEXT," +
                 "${FeedEntry.COLUMN_NAME_SUBTITLE} TEXT," +
                 "${FeedEntry.COLUMN_CREATE_DATE} TEXT," +
-                "${FeedEntry.COLUMN_UPDATE_DATE}" +
+                "${FeedEntry.COLUMN_UPDATE_DATE} TEXT" +
                 ")"
 
     const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${FeedEntry.TABLE_NAME}"

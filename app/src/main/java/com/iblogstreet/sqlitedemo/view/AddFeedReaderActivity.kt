@@ -6,9 +6,12 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.iblogstreet.sqlitedemo.R
+import com.iblogstreet.sqlitedemo.bean.EntryBean
 import com.iblogstreet.sqlitedemo.util.DBManager
 import com.iblogstreet.sqlitedemo.util.DbUtil
+import com.iblogstreet.sqlitedemo.viewmodel.EntryViewModel
 
 /**
  * @author junwang
@@ -17,7 +20,7 @@ import com.iblogstreet.sqlitedemo.util.DbUtil
 class AddFeedReaderActivity : AppCompatActivity() {
     private lateinit var etTitle: EditText
     private lateinit var etSubTitle: EditText
-    private lateinit var dbManager: DBManager
+    private lateinit var entryViewModel: EntryViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_feedreader)
@@ -27,7 +30,9 @@ class AddFeedReaderActivity : AppCompatActivity() {
     }
 
     private fun initData() {
-        dbManager = DBManager(this)
+        entryViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.application)
+            .create(EntryViewModel::class.java)
+
     }
 
     private fun initView() {
@@ -37,11 +42,17 @@ class AddFeedReaderActivity : AppCompatActivity() {
 
     private fun initEvent() {
         findViewById<TextView>(R.id.tv_add).setOnClickListener {
-            if (DbUtil.putData(
-                    dbManager.getDb(),
+            val result = entryViewModel.insertEntry(
+                EntryBean(
+                    0,
                     etTitle.text.toString(),
-                    etSubTitle.text.toString()
+                    etSubTitle.text.toString(),
+                    System.currentTimeMillis().toString(),
+                    null
                 )
+            )
+
+            if (result
             ) {
                 Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)
@@ -52,8 +63,4 @@ class AddFeedReaderActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        dbManager.close()
-        super.onDestroy()
-    }
 }
